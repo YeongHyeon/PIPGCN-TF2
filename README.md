@@ -39,7 +39,7 @@ Graph
 │    └── Half Sphere Amino Acid Composition: 40
 └── Edge: 2 features
      ├── Average Atomic Distance: 1
-     └──  CCαO Angle: 1
+     └── CCαO Angle: 1
 ```
 
 ## Result

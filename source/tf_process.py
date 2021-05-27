@@ -64,9 +64,6 @@ def training(agent, dataset, batch_size, epochs):
         print("Epoch [%d / %d] | Loss: %f" %(epoch, epochs, step_dict['losses']['entropy']))
         agent.save_params(model='model_0_finepocch')
 
-    for idx_k, name_key in enumerate(list(best_val.keys())):
-        print(name_key, best_val[name_key])
-
 def test(agent, dataset, batch_size):
 
     savedir = 'results_te'

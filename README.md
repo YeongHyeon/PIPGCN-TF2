@@ -14,7 +14,7 @@ $ python run.py
 |Set|Complex|Positive|Negative|
 |:---|---:|---:|---:|
 |Training|140|12866 (9.1 %)|128660 (90.9 %)|
-|Validation|35|3138 (9.1 %)|31380 (90.9 %)|
+|Validation|35|3138 (0.2 %)|31380 (99.8 %)|
 |Test|55|4871 (0.1 %)|4953446 (99.9 %)|
 
 <div align="center">

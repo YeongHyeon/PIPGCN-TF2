@@ -9,6 +9,8 @@ $ python run.py
 ```
 
 ## Dataset
+
+### Number of samples
 |Set|Complex|Positive|Negative|
 |:---|---:|---:|---:|
 |Training|140|12866 (9.1 %)|128660 (90.9 %)|
@@ -22,6 +24,23 @@ $ python run.py
   </p>
   <p>Sample view for Ligand and Receptor respectively.</p>
 </div>
+
+### Feature description
+
+```
+Graph
+│
+├── Vertex: 70 features
+│    ├── Windowed Position Specific Scoring Matrix: 20
+│    ├── Relative Accessible Surface Area: 1
+│    ├── Residue Depth: 2
+│    ├── Protrusion Index: 6
+│    ├── Hydrophobicity: 1
+│    └── Half Sphere Amino Acid Composition: 40
+└── Edge: 2 features
+     ├── Average Atomic Distance: 1
+     └──  CCαO Angle: 1
+```
 
 ## Result
 * Refer that the results shown below are temporary results. (AUROC: 0.66456)  

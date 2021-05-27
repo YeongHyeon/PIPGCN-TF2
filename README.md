@@ -47,6 +47,12 @@ Graph
 * The model tuning process is not finished completely.  
 <div align="center">
   <p>
+    <img src="./figures/loss.svg" width="250">
+  </p>
+  <p>Loss graph.</p>
+</div>
+<div align="center">
+  <p>
     <img src="./figures/result.png" width="800">
   </p>
   <p>Results of the test process. The first figure (upper side) shows the negative interaction score between ligand and receptor. The lower side figures show a histogram of negative interaction score of negative labeled and positive labeled sample.</p>

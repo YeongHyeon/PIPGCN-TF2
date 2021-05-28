@@ -38,7 +38,7 @@ def main():
 
     print("Time (TR): %.5f [sec]" %(time_te - time_tr))
     te_time = time_fin - time_te
-    print("Time (TE): %.5f (%.5f [sec/sample])" %(te_time, te_time/num_model/dataset.num_te))
+    print("Time (TE): %.5f (%.5f [sec/sample])" %(te_time, te_time/dataset.num_te))
 
 if __name__ == '__main__':
 

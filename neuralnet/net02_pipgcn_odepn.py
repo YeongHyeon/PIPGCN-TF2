@@ -1,8 +1,10 @@
 import os
 import numpy as np
 import tensorflow as tf
-import whiteboxlayer.layers as lay
 import source.utils as utils
+import whiteboxlayer.layers as lay
+
+from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
 
 class Agent(object):
 
@@ -57,6 +59,7 @@ class Agent(object):
             tf.TensorSpec(shape=(1, self.dim_edge_near, self.dim_edge_feat), dtype=tf.float32), \
             tf.TensorSpec(shape=(1, self.dim_edge_near, 1), dtype=tf.int32), \
             tf.TensorSpec(shape=(1, 3), dtype=tf.int32))
+        self.__get_flops(conc_func)
 
     def __loss(self, y, y_hat):
 
@@ -89,14 +92,54 @@ class Agent(object):
 
         return {'y_hat':y_hat, 'losses':losses}
 
-    def save_params(self, model='base'):
+    def __get_flops(self, conc_func):
 
-        vars_to_save = self.__model.layer.parameters.copy()
-        vars_to_save["optimizer"] = self.optimizer
+        frozen_func, graph_def = convert_variables_to_constants_v2_as_graph(conc_func)
 
-        ckpt = tf.train.Checkpoint(**vars_to_save)
-        ckptman = tf.train.CheckpointManager(ckpt, directory=os.path.join(self.path_ckpt, model), max_to_keep=1)
-        ckptman.save()
+        with tf.Graph().as_default() as graph:
+            tf.compat.v1.graph_util.import_graph_def(graph_def, name='')
+
+            run_meta = tf.compat.v1.RunMetadata()
+            opts = tf.compat.v1.profiler.ProfileOptionBuilder.float_operation()
+            flops = tf.compat.v1.profiler.profile(graph=graph, run_meta=run_meta, cmd="op", options=opts)
+
+            flop_tot = flops.total_float_ops
+            ftxt = open("flops.txt", "w")
+            for idx, name in enumerate(['', 'K', 'M', 'G', 'T']):
+                text = '%.3f [%sFLOPS]' %(flop_tot/10**(3*idx), name)
+                print(text)
+                ftxt.write("%s\n" %(text))
+            ftxt.close()
+
+    def save_params(self, model='base', tflite=False):
+
+        if(tflite):
+            # https://github.com/tensorflow/tensorflow/issues/42818
+            conc_func = self.__model.__call__.get_concrete_function(\
+                tf.TensorSpec(shape=(1, self.dim_node_feat), dtype=tf.float32), \
+                tf.TensorSpec(shape=(1, self.dim_edge_near, self.dim_edge_feat), dtype=tf.float32), \
+                tf.TensorSpec(shape=(1, self.dim_edge_near, 1), dtype=tf.int32), \
+                tf.TensorSpec(shape=(1, self.dim_node_feat), dtype=tf.float32), \
+                tf.TensorSpec(shape=(1, self.dim_edge_near, self.dim_edge_feat), dtype=tf.float32), \
+                tf.TensorSpec(shape=(1, self.dim_edge_near, 1), dtype=tf.int32), \
+                tf.TensorSpec(shape=(1, 3), dtype=tf.int32))
+            converter = tf.lite.TFLiteConverter.from_concrete_functions([conc_func])
+
+            converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            converter.experimental_new_converter = True
+            converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
+
+            tflite_model = converter.convert()
+
+            with open('model.tflite', 'wb') as f:
+                f.write(tflite_model)
+        else:
+            vars_to_save = self.__model.layer.parameters.copy()
+            vars_to_save["optimizer"] = self.optimizer
+
+            ckpt = tf.train.Checkpoint(**vars_to_save)
+            ckptman = tf.train.CheckpointManager(ckpt, directory=os.path.join(self.path_ckpt, model), max_to_keep=1)
+            ckptman.save()
 
     def load_params(self, model):
 
@@ -145,10 +188,12 @@ class Neuralnet(tf.Module):
         node_l, edge_l, hood_l, \
         pair, verbose=False):
 
-        agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn', verbose=verbose)
-        agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn', verbose=verbose)
+        # origin deco: @tf.function
+        # @tf.autograph.experimental.do_not_convert
+        agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn_r', verbose=verbose)
+        agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn_l', verbose=verbose)
         logit = self.__clf(receptor=agg_r, ligand=agg_l, pair=pair, name='clf', verbose=verbose)
-        y_hat = tf.nn.softmax(logit, name="y_hat") 
+        y_hat = tf.nn.softmax(logit, name="y_hat") # speeds up training trick
 
         return logit, y_hat
 
@@ -157,7 +202,7 @@ class Neuralnet(tf.Module):
         if(verbose): print("\n* GCN")
 
         for idx in range(len(self.filters)):
-            node = self.layer.node_edge_average(node=node, edge=edge, hood=hood, c_out=self.filters[idx], \
+            node = self.layer.pipgcn_order_dependent(node=node, edge=edge, hood=hood, c_out=self.filters[idx], \
                 batch_norm=False, activation='relu', name='%s-%d' %(name, idx), verbose=verbose)
 
         return node

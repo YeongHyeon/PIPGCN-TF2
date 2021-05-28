@@ -60,7 +60,7 @@ Graph
 
 ## Requirements
 * TensorFlow 2.3.0  
-* <a href="https://pypi.org/project/whiteboxlayer/">White Box Layer</a> 0.1.1  
+* <a href="https://pypi.org/project/whiteboxlayer/">White Box Layer</a> 0.1.2  
 
 ## Contribution
 * <a href="https://github.com/YeongHyeon">YeongHyeon Park</a> : PIPGCN implementation (including neural network, data management)  

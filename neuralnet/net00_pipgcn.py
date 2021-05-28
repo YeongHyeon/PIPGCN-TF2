@@ -168,7 +168,7 @@ class Neuralnet(tf.Module):
 
         inter = self.layer.merge_ligand_receptor(ligand=ligand, receptor=receptor, pair=pair, verbose=verbose)
 
-        x = self.layer.fully_connected(x=inter, c_out=64, \
+        x = self.layer.fully_connected(x=inter, c_out=512, \
                 batch_norm=False, activation='relu', name="%s-clf0" %(name), verbose=verbose)
         x = self.layer.fully_connected(x=x, c_out=self.num_class, \
                 batch_norm=False, activation=None, name="%s-clf1" %(name), verbose=verbose)

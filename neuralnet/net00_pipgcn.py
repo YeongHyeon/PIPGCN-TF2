@@ -148,7 +148,7 @@ class Neuralnet(tf.Module):
         agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn', verbose=verbose)
         agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn', verbose=verbose)
         logit = self.__clf(receptor=agg_r, ligand=agg_l, pair=pair, name='clf', verbose=verbose)
-        y_hat = tf.nn.softmax(logit, name="y_hat") # speeds up training trick
+        y_hat = tf.nn.softmax(logit, name="y_hat") 
 
         return logit, y_hat
 

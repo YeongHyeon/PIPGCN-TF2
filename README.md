@@ -47,7 +47,7 @@ Graph
 * The model tuning process is not finished completely.  
 <div align="center">
   <p>
-    <img src="./figures/loss.svg" width="400">
+    <img src="./figures/loss.svg" width="600">
   </p>
   <p>Loss graph.</p>
 </div>

@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
-import source.layers as lay
+import whiteboxlayer.layers as lay
 import source.utils as utils
 
 class Agent(object):

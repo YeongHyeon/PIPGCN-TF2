@@ -58,6 +58,10 @@ Graph
   <p>Results of the test process. The first figure (upper side) shows the negative interaction score between ligand and receptor. The lower side figures show a histogram of negative interaction score of negative labeled and positive labeled sample.</p>
 </div>
 
+## Requirements
+* TensorFlow 2.3.0  
+* <a href="https://pypi.org/project/whiteboxlayer/">White Box Layer</a> 0.1.1  
+
 ## Reference
 [1] Fout, Alex M. <a href="https://mountainscholar.org/handle/10217/185661">Protein interface prediction using graph convolutional networks</a>. Diss. Colorado State University, 2017.  
 [2] Supplementary Data for NIPS Publication: Protein Interface Prediction using Graph Convolutional Networks. https://zenodo.org/record/1127774#.WkLewGGnGcY

@@ -42,6 +42,13 @@ Graph
      └── CCαO Angle: 1
 ```
 
+<div align="center">
+  <p>
+    <img src="./figures/equation.png" width="600">
+  </p>
+  <p>Three equations for each neural network in this repository. Each equation is provided as <a href="https://github.com/YeongHyeon/PIPGCN-TF2/blob/master/neuralnet/net00_pipgcn_navg.py">net00_pipgcn_navg.py</a>, <a href="https://github.com/YeongHyeon/PIPGCN-TF2/blob/master/neuralnet/net01_pipgcn_neavg.py">net01_pipgcn_neavg.py</a>, and <a href="https://github.com/YeongHyeon/PIPGCN-TF2/blob/master/neuralnet/net02_pipgcn_odepn.py">net02_pipgcn_odepn.py</a></p>
+</div>
+
 ## Result
 * Refer that the results shown below are temporary results. (AUROC: 0.81421)  
 * The model tuning process is not finished completely.  

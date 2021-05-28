@@ -133,7 +133,7 @@ class Neuralnet(tf.Module):
         self.dim_edge_near = kwargs['dim_edge_near']
         self.dim_edge_feat = kwargs['dim_edge_feat']
         self.num_class = kwargs['num_class']
-        self.filters = [96, 128]
+        self.filters = [256, 256, 512, 512]
 
         self.layer = lay.Layers()
 

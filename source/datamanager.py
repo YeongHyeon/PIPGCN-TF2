@@ -42,7 +42,7 @@ class DataSet(object):
 
         random.shuffle(self.data_tr)
         for idx, _ in enumerate(self.data_tr):
-            random.shuffle(self.data_tr[idx]['label'])
+            np.random.shuffle(self.data_tr[idx]['label'])
 
     def next_batch(self, batch_size=1, ttv=0):
 
@@ -74,20 +74,17 @@ class DataSet(object):
                     inter = 0
                 break
 
-        if(ttv == 0):
-            self.idx_tr, self.inter_tr, self.data_tr = idx_d, inter, data
-        elif(ttv == 1):
-            self.idx_te, self.inter_te, self.data_te = idx_d, inter, data
-        else:
-            self.idx_val, self.inter_val, self.data_val = idx_d, inter, data
+        if(ttv == 0): self.idx_tr, self.inter_tr = idx_d, inter
+        elif(ttv == 1): self.idx_te, self.inter_te = idx_d, inter
+        else: self.idx_val, self.inter_val = idx_d, inter
 
         try:
             for name_key in list(data_protein.keys()):
                 if(name_key == 'label'):
                     batch['label'] = pairs.astype(np.int32)
                     one_hots = []
-                    for idx_p, pair in enumerate(pairs):
-                        if(pair[2] == -1): one_hots.append(np.diag(np.ones(self.num_class))[0])
+                    for idx_p, pair in enumerate(batch['label']):
+                        if(pair[-1] == -1): one_hots.append(np.diag(np.ones(self.num_class))[0])
                         else: one_hots.append(np.diag(np.ones(self.num_class))[1])
                     batch['label_1hot'] = np.asarray(one_hots).astype(np.float32)
                 else:

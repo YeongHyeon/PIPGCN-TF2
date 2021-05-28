@@ -43,7 +43,7 @@ Graph
 ```
 
 ## Result
-* Refer that the results shown below are temporary results. (AUROC: 0.66456)  
+* Refer that the results shown below are temporary results. (AUROC: 0.81421)  
 * The model tuning process is not finished completely.  
 <div align="center">
   <p>

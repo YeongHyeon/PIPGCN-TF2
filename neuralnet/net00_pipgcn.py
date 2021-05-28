@@ -133,7 +133,7 @@ class Neuralnet(tf.Module):
         self.dim_edge_near = kwargs['dim_edge_near']
         self.dim_edge_feat = kwargs['dim_edge_feat']
         self.num_class = kwargs['num_class']
-        self.filters = [256, 256, 512, 512]
+        self.filters = [96, 128]
 
         self.layer = lay.Layers()
 
@@ -145,10 +145,8 @@ class Neuralnet(tf.Module):
         node_l, edge_l, hood_l, \
         pair, verbose=False):
 
-        # origin deco: @tf.function
-        # @tf.autograph.experimental.do_not_convert
-        agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn_r', verbose=verbose)
-        agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn_l', verbose=verbose)
+        agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn', verbose=verbose)
+        agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn', verbose=verbose)
         logit = self.__clf(receptor=agg_r, ligand=agg_l, pair=pair, name='clf', verbose=verbose)
         y_hat = tf.nn.softmax(logit, 0, name="y_hat") # speeds up training trick
 
@@ -170,7 +168,7 @@ class Neuralnet(tf.Module):
 
         inter = self.layer.merge_ligand_receptor(ligand=ligand, receptor=receptor, pair=pair, verbose=verbose)
 
-        x = self.layer.fully_connected(x=inter, c_out=512, \
+        x = self.layer.fully_connected(x=inter, c_out=64, \
                 batch_norm=False, activation='relu', name="%s-clf0" %(name), verbose=verbose)
         x = self.layer.fully_connected(x=x, c_out=self.num_class, \
                 batch_norm=False, activation=None, name="%s-clf1" %(name), verbose=verbose)

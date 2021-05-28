@@ -215,57 +215,6 @@ class Layers(object):
 
         return tf.slice(x, [0, 0, 0], shape)
 
-    def sub_pixel1d(self, x, ratio, verbose=True):
-
-        y1 = tf.transpose(a=x, perm=[2, 1, 0]) # (r, w, b)
-        y2 = tf.batch_to_space(y1, [ratio], [[0, 0]]) # (1, r*w, b)
-        y3 = tf.transpose(a=y2, perm=[2, 1, 0])
-
-        if(verbose): print("SubPixel", x.shape, "->", y3.shape)
-        return y3
-
-    def graph_conv(self, x, a, c_out, \
-        batch_norm=False, activation=None, name='', verbose=True):
-
-        c_in, c_out = x.get_shape().as_list()[-1], int(c_out)
-
-        w = self.__get_variable(shape=[c_in, c_out], \
-            trainable=True, name='%s_w' %(name))
-        b = self.__get_variable(shape=[c_out], \
-            trainable=True, name='%s_b' %(name))
-
-        wx = tf.linalg.matmul(x, w, name='%s_mul' %(name))
-        y_feat = tf.math.add(wx, b, name='%s_add' %(name))
-        y = tf.linalg.matmul(a, y_feat)
-
-        if(verbose): print("G-Conv (%s)" %(name), x.shape, "->", y.shape)
-
-        if(batch_norm): y = self.batch_normalization(x=y, \
-            trainable=True, name='%s_bn' %(name), verbose=verbose)
-        return self.activation(x=y, activation=activation, name=name)
-
-    # def graph_attention(self, x, c_out, \
-    #     batch_norm=False, activation=None, name='', verbose=True):
-    #
-    #     wx = self.fully_connected(x=x, c_out=c_out, \
-    #         batch_norm=False, activation=None, name=name, verbose=False)
-    #
-    #     y = tf.math.reduce_sum(wx, axis=-1)
-    #
-    #     if(verbose): print("Readout (%s)" %(name), x.shape, "->", y.shape)
-    #     return self.activation(x=y, activation=activation, name=name)
-
-    def read_out(self, x, c_out, \
-        batch_norm=False, activation=None, name='', verbose=True):
-
-        wx = self.fully_connected(x=x, c_out=c_out, \
-            batch_norm=False, activation=None, name=name, verbose=False)
-
-        y = tf.math.reduce_sum(wx, axis=-1)
-
-        if(verbose): print("Readout (%s)" %(name), x.shape, "->", y.shape)
-        return self.activation(x=y, activation=activation, name=name)
-
     def node_edge_average(self, node, edge, hood, c_out, \
         batch_norm=False, activation=None, name='', verbose=True):
 

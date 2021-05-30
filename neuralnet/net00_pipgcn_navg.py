@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 import source.utils as utils
 import whiteboxlayer.layers as lay
+import whiteboxlayer.extention as ext
 
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
 
@@ -190,8 +191,8 @@ class Neuralnet(tf.Module):
 
         # origin deco: @tf.function
         # @tf.autograph.experimental.do_not_convert
-        agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn_r', verbose=verbose)
-        agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn_l', verbose=verbose)
+        agg_r = self.__gcn(node=node_r, edge=edge_r, hood=hood_r, name='gcn', verbose=verbose)
+        agg_l = self.__gcn(node=node_l, edge=edge_l, hood=hood_l, name='gcn', verbose=verbose)
         logit = self.__clf(receptor=agg_r, ligand=agg_l, pair=pair, name='clf', verbose=verbose)
         y_hat = tf.nn.softmax(logit, name="y_hat") # speeds up training trick
 
@@ -202,7 +203,7 @@ class Neuralnet(tf.Module):
         if(verbose): print("\n* GCN")
 
         for idx in range(len(self.filters)):
-            node = self.layer.pipgcn_node_average(node=node, c_out=self.filters[idx], \
+            node = ext.pipgcn_node_average(layer=self.layer, node=node, c_out=self.filters[idx], \
                 batch_norm=False, activation='relu', name='%s-%d' %(name, idx), verbose=verbose)
 
         return node
@@ -211,7 +212,7 @@ class Neuralnet(tf.Module):
 
         if(verbose): print("\n* CLF")
 
-        inter = self.layer.merge_ligand_receptor(ligand=ligand, receptor=receptor, pair=pair, verbose=verbose)
+        inter = ext.merge_ligand_receptor(layer=self.layer, ligand=ligand, receptor=receptor, pair=pair, verbose=verbose)
 
         x = self.layer.fully_connected(x=inter, c_out=512, \
                 batch_norm=False, activation='relu', name="%s-clf0" %(name), verbose=verbose)

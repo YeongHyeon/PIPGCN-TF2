@@ -48,7 +48,7 @@ def perform_from_confmat(confusion_matrix, num_class, verbose=False):
 
 def training(agent, dataset, batch_size, epochs):
 
-    print("\n** Training of the AE to %d epoch | Batch size: %d" %(epochs, batch_size))
+    print("\n** Training to %d epoch | Batch size: %d" %(epochs, batch_size))
     iteration = 0
 
     for epoch in range(epochs):

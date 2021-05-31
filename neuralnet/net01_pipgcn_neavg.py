@@ -112,35 +112,14 @@ class Agent(object):
                 ftxt.write("%s\n" %(text))
             ftxt.close()
 
-    def save_params(self, model='base', tflite=False):
+    def save_params(self, model='base'):
 
-        if(tflite):
-            # https://github.com/tensorflow/tensorflow/issues/42818
-            conc_func = self.__model.__call__.get_concrete_function(\
-                tf.TensorSpec(shape=(1, self.dim_node_feat), dtype=tf.float32), \
-                tf.TensorSpec(shape=(1, self.dim_edge_near, self.dim_edge_feat), dtype=tf.float32), \
-                tf.TensorSpec(shape=(1, self.dim_edge_near, 1), dtype=tf.int32), \
-                tf.TensorSpec(shape=(1, self.dim_node_feat), dtype=tf.float32), \
-                tf.TensorSpec(shape=(1, self.dim_edge_near, self.dim_edge_feat), dtype=tf.float32), \
-                tf.TensorSpec(shape=(1, self.dim_edge_near, 1), dtype=tf.int32), \
-                tf.TensorSpec(shape=(1, 3), dtype=tf.int32))
-            converter = tf.lite.TFLiteConverter.from_concrete_functions([conc_func])
+        vars_to_save = self.__model.layer.parameters.copy()
+        vars_to_save["optimizer"] = self.optimizer
 
-            converter.optimizations = [tf.lite.Optimize.DEFAULT]
-            converter.experimental_new_converter = True
-            converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
-
-            tflite_model = converter.convert()
-
-            with open('model.tflite', 'wb') as f:
-                f.write(tflite_model)
-        else:
-            vars_to_save = self.__model.layer.parameters.copy()
-            vars_to_save["optimizer"] = self.optimizer
-
-            ckpt = tf.train.Checkpoint(**vars_to_save)
-            ckptman = tf.train.CheckpointManager(ckpt, directory=os.path.join(self.path_ckpt, model), max_to_keep=1)
-            ckptman.save()
+        ckpt = tf.train.Checkpoint(**vars_to_save)
+        ckptman = tf.train.CheckpointManager(ckpt, directory=os.path.join(self.path_ckpt, model), max_to_keep=1)
+        ckptman.save()
 
     def load_params(self, model):
 

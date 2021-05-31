@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 import source.utils as utils
 import whiteboxlayer.layers as lay
-import whiteboxlayer.extention as ext
+import whiteboxlayer.extensions.graph as graph
 
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
 
@@ -182,7 +182,7 @@ class Neuralnet(tf.Module):
         if(verbose): print("\n* GCN")
 
         for idx in range(len(self.filters)):
-            node = ext.pipgcn_order_dependent(layer=self.layer, node=node, edge=edge, hood=hood, c_out=self.filters[idx], \
+            node = graph.pipgcn_order_dependent(layer=self.layer, node=node, edge=edge, hood=hood, c_out=self.filters[idx], \
                 batch_norm=False, activation='relu', name='%s-%d' %(name, idx), verbose=verbose)
 
         return node
@@ -191,7 +191,7 @@ class Neuralnet(tf.Module):
 
         if(verbose): print("\n* CLF")
 
-        inter = ext.merge_ligand_receptor(layer=self.layer, ligand=ligand, receptor=receptor, pair=pair, verbose=verbose)
+        inter = graph.merge_ligand_receptor(layer=self.layer, ligand=ligand, receptor=receptor, pair=pair, verbose=verbose)
 
         x = self.layer.fully_connected(x=inter, c_out=512, \
                 batch_norm=False, activation='relu', name="%s-clf0" %(name), verbose=verbose)

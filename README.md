@@ -71,7 +71,7 @@ Graph
 
 ## Contribution
 * <a href="https://github.com/YeongHyeon">YeongHyeon Park</a> : PIPGCN implementation (including neural network, data management)  
-* <a href="https://github.com/kjm1559">Myung Jin Kim</a> : source code review (double-check)
+* <a href="https://github.com/kjm1559">Myung Jin Kim</a> and Yeong Beom Kim : review (double-check)
 
 ## Reference
 [1] Fout, Alex M. <a href="https://mountainscholar.org/handle/10217/185661">Protein interface prediction using graph convolutional networks</a>. Diss. Colorado State University, 2017.  
